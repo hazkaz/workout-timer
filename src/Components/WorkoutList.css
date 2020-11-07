@@ -21,7 +21,7 @@
 
 .row-dragging td {
   padding: 16px;
-  visibility: hidden;
+  /* visibility: hidden; */
 }
 
 .row-dragging .drag-visible {

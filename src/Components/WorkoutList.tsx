@@ -131,20 +131,20 @@ class WorkoutList extends React.Component {
     this.context.updateWorkouts(newWorkouts);
   };
 
-  DraggableBodyRow = ({ className: string, style: any, ...restProps }) => {
+  DraggableBodyRow = ({ ...restProps }) => {
     const { workouts } = this.context;
     // function findIndex base on Table rowKey props and should always be a right array index
     const index = workouts.findIndex(
-      (x) => x.index === restProps["data-row-key"]
+      (x) => x.key === restProps["data-row-key"]
     );
     return <SortableItem index={index} {...restProps} />;
   };
 
-  onSortEnd = ({ oldIndex, newIndex }) => {
+  onSortEnd = ({ oldIndex, newIndex }: { oldIndex: any; newIndex: any }) => {
     const newWorkouts = [...this.context.workouts];
     if (oldIndex !== newIndex) {
       const oldWorkout = newWorkouts.splice(oldIndex, 1);
-      newWorkouts.splice(newIndex, 0, oldWorkout[0]);
+      newWorkouts.splice(newIndex, 0, ...oldWorkout);
       this.context.updateWorkouts(newWorkouts);
     }
   };
@@ -153,7 +153,7 @@ class WorkoutList extends React.Component {
   //   return <List.Item>{w.name}</List.Item>;
   // };
   render() {
-    const DraggableContainer = (props) => (
+    const DraggableContainer = (props: any) => (
       <SortableContainer
         useDragHandle
         helperClass="row-dragging"

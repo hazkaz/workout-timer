@@ -3,7 +3,7 @@ import "./styles.css";
 import { Progress, Button } from "antd";
 import WorkoutList from "./Components/WorkoutList";
 import WorkoutContext, { defaultWorkout } from "./Contexts/WorkoutContext";
-import { shortHighBeep } from "./utls";
+import { shortHighBeep } from "./utils";
 
 type AppProps = {};
 
@@ -85,7 +85,10 @@ class App extends React.Component<AppProps, AppState> {
             timeRemaining: timeRemaining,
             timeRemainingExact: timeRemainingExact
           },
-          () => setTimeout(this.updateTimer, 100)
+          () => {
+            setTimeout(this.updateTimer, 100);
+            shortHighBeep();
+          }
         );
       } else if (timeRemaining <= 0) {
         this.setState(
