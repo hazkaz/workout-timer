@@ -1,0 +1,29 @@
+.workout-list-header {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.workout-list-header .add-workout-button {
+  justify-self: start;
+}
+
+.workout-list-header .workout-header-title {
+  display: inline-block;
+  margin: 0 10px;
+  justify-self: center;
+}
+
+.row-dragging {
+  background: #fafafa;
+  border: 1px solid #ccc;
+}
+
+.row-dragging td {
+  padding: 16px;
+  visibility: hidden;
+}
+
+.row-dragging .drag-visible {
+  visibility: visible;
+}

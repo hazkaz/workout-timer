@@ -3,6 +3,7 @@ import "./styles.css";
 import { Progress, Button } from "antd";
 import WorkoutList from "./Components/WorkoutList";
 import WorkoutContext, { defaultWorkout } from "./Contexts/WorkoutContext";
+import { shortHighBeep } from "./utls";
 
 type AppProps = {};
 
@@ -44,21 +45,32 @@ class App extends React.Component<AppProps, AppState> {
   componentDidUpdate = () => {};
 
   updateWorkout = (newWorkouts: Array<Workout>) => {
-    this.setState({
-      workouts: newWorkouts,
-      timerDuration: newWorkouts[0].duration,
-      timeRemaining: newWorkouts[0].duration,
-      timeRemainingExact: newWorkouts[0].duration
-    });
+    if (newWorkouts.length > 0) {
+      this.setState({
+        workouts: newWorkouts,
+        timerDuration: newWorkouts[0].duration,
+        timeRemaining: newWorkouts[0].duration,
+        timeRemainingExact: newWorkouts[0].duration
+      });
+    } else {
+      this.setState({
+        workouts: newWorkouts,
+        timerDuration: 0,
+        timeRemaining: 0,
+        timeRemainingExact: 0
+      });
+    }
   };
 
   startTimer = () => {
-    this.setState((oldState) => {
-      return {
-        timerRunning: true,
-        timerStarted: Date.now()
-      };
-    }, this.updateTimer);
+    if (this.state.workouts && this.state.workouts.length > 0) {
+      this.setState((oldState) => {
+        return {
+          timerRunning: true,
+          timerStarted: Date.now()
+        };
+      }, this.updateTimer);
+    }
   };
 
   updateTimer = () => {
@@ -139,6 +151,9 @@ class App extends React.Component<AppProps, AppState> {
                 this.state.timerRunning ? this.stopTimer : this.startTimer
               }
               className="start-button"
+              disabled={
+                !(this.state.workouts && this.state.workouts.length > 0)
+              }
             >
               {this.state.timerRunning ? "Stop" : "Start"}
             </Button>
