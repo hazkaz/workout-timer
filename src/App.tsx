@@ -4,8 +4,26 @@ import { Progress, Button } from "antd";
 import WorkoutList from "./Components/WorkoutList";
 import WorkoutContext, { defaultWorkout } from "./Contexts/WorkoutContext";
 
-class App extends React.Component {
-  state = {
+type AppProps = {};
+
+export type Workout = {
+  key: string;
+  name: string;
+  duration: number;
+  targetMuscles: Array<string>;
+};
+type AppState = {
+  timerStarted: number;
+  timerRunning: boolean;
+  timerDuration: number;
+  timeRemaining: number;
+  timeRemainingExact: number;
+  currentWorkoutIndex: number;
+  workouts: Array<Workout>;
+};
+
+class App extends React.Component<AppProps, AppState> {
+  state: AppState = {
     timerStarted: Date.now(),
     timerRunning: false,
     timerDuration: 30,
@@ -16,28 +34,31 @@ class App extends React.Component {
   };
 
   componentDidMount = () => {
-    this.setState((oldState) => {
-      if (oldState.workouts.length > 0) {
-        return {
-          timerDuration: oldState.workouts[0].duration,
-          timeRemaining: oldState.workouts[0].duration,
-          timeRemainingExact: oldState.workouts[0].duration
-        };
-      }
+    this.setState({
+      timerDuration: this.state.workouts[0].duration,
+      timeRemaining: this.state.workouts[0].duration,
+      timeRemainingExact: this.state.workouts[0].duration
     });
   };
 
   componentDidUpdate = () => {};
 
-  updateWorkout = (newWorkouts) => {
-    this.setState({ workouts: newWorkouts });
+  updateWorkout = (newWorkouts: Array<Workout>) => {
+    this.setState({
+      workouts: newWorkouts,
+      timerDuration: newWorkouts[0].duration,
+      timeRemaining: newWorkouts[0].duration,
+      timeRemainingExact: newWorkouts[0].duration
+    });
   };
 
   startTimer = () => {
-    this.setState(
-      { timerRunning: true, timerStarted: Date.now() },
-      this.updateTimer
-    );
+    this.setState((oldState) => {
+      return {
+        timerRunning: true,
+        timerStarted: Date.now()
+      };
+    }, this.updateTimer);
   };
 
   updateTimer = () => {
@@ -61,7 +82,10 @@ class App extends React.Component {
               return {
                 timeRemaining: 0,
                 timeRemainingExact: 0,
-                timerRunning: false
+                timerRunning: false,
+                timerStarted: this.state.timerStarted,
+                timerDuration: this.state.timerDuration,
+                currentWorkoutIndex: this.state.currentWorkoutIndex
               };
             } else {
               const newWorkoutIndex = oldState.currentWorkoutIndex + 1;
@@ -94,9 +118,13 @@ class App extends React.Component {
   resetTimer() {}
 
   render() {
+    const workoutContextValue = {
+      workouts: this.state.workouts,
+      updateWorkouts: this.updateWorkout
+    };
     return (
       <div className="App">
-        <WorkoutContext.Provider value={defaultWorkout}>
+        <WorkoutContext.Provider value={workoutContextValue}>
           <h1>Workout Timer</h1>
           <Progress
             type="circle"

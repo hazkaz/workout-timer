@@ -1,6 +1,12 @@
 import * as React from "react";
+import { Workout } from "../App";
 
-const defaultWorkout = {
+export type TWorkoutContext = {
+  workouts: Array<Workout>;
+  updateWorkouts: any;
+};
+
+const defaultWorkout: TWorkoutContext = {
   workouts: [
     {
       key: "1",
@@ -24,7 +30,7 @@ const defaultWorkout = {
   updateWorkouts: () => {}
 };
 
-const WorkoutContext = React.createContext(defaultWorkout);
+const WorkoutContext = React.createContext<TWorkoutContext>(defaultWorkout);
 
 export default WorkoutContext;
 export { defaultWorkout };
