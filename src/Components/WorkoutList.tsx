@@ -6,7 +6,7 @@ import { Workout } from "../App";
 class WorkoutList extends React.Component {
   state = {};
   static contextType = WorkoutContext;
-  declare context: React.ContextType<typeof WorkoutContext>;
+  context!: React.ContextType<typeof WorkoutContext>;
   handleUpdateName = (workoutId: string, workoutNewName: string) => {
     const newWorkouts = [...this.context.workouts];
     const workoutIndex = newWorkouts.findIndex((w) => w.key === workoutId);
