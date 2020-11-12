@@ -1,9 +1,9 @@
-import * as React from "react";
-import "./styles.css";
-import { Progress, Button } from "antd";
-import WorkoutList from "./Components/WorkoutList";
-import WorkoutContext, { defaultWorkout } from "./Contexts/WorkoutContext";
-import { shortHighBeep } from "./utils";
+import * as React from 'react';
+import './styles.css';
+import { Progress, Button } from 'antd';
+import WorkoutList from './Components/WorkoutList';
+import WorkoutContext, { defaultWorkout } from './Contexts/WorkoutContext';
+import { shortHighBeep } from './utils';
 
 type AppProps = {};
 
@@ -11,6 +11,7 @@ export type Workout = {
   key: string;
   name: string;
   duration: number;
+  index: number;
   targetMuscles: Array<string>;
 };
 type AppState = {
@@ -158,7 +159,7 @@ class App extends React.Component<AppProps, AppState> {
                 !(this.state.workouts && this.state.workouts.length > 0)
               }
             >
-              {this.state.timerRunning ? "Stop" : "Start"}
+              {this.state.timerRunning ? 'Stop' : 'Start'}
             </Button>
           </div>
           <WorkoutList />

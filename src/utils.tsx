@@ -9,7 +9,7 @@ export function shortHighBeep() {
 
   gainNode.gain.value = 0.1;
   oscillator.frequency.value = 1300;
-  oscillator.type = "sine";
+  oscillator.type = 'sine';
 
   oscillator.start(audioCtx.currentTime);
   oscillator.stop(audioCtx.currentTime + 180 / 1000);
