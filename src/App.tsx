@@ -8,7 +8,7 @@ import { shortHighBeep } from './utils';
 type AppProps = {};
 
 export type Workout = {
-  key?: string;
+  key: string;
   name: string;
   duration: number;
   index: number;
