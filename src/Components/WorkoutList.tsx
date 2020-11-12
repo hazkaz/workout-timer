@@ -18,6 +18,7 @@ const SortableContainer = sortableContainer((props: any) => (
   <tbody {...props} />
 ));
 
+
 class WorkoutList extends React.Component {
   state = {};
   static contextType = WorkoutContext;
@@ -152,16 +153,15 @@ class WorkoutList extends React.Component {
       this.context.updateWorkouts(newWorkouts);
     }
   };
-
+  DraggableContainer = (props: any) => (
+    <SortableContainer
+      useDragHandle
+      helperClass="row-dragging"
+      onSortEnd={this.onSortEnd}
+      {...props}
+    />
+  );
   render() {
-    const DraggableContainer = (props: any) => (
-      <SortableContainer
-        useDragHandle
-        helperClass="row-dragging"
-        onSortEnd={this.onSortEnd}
-        {...props}
-      />
-    );
     return (
       <>
         <div className="workout-list-header">
@@ -179,10 +179,9 @@ class WorkoutList extends React.Component {
           columns={this.columns}
           dataSource={this.context.workouts}
           pagination={false}
-          rowKey="index"
           components={{
             body: {
-              wrapper: DraggableContainer,
+              wrapper: this.DraggableContainer,
               row: this.DraggableBodyRow
             }
           }}
