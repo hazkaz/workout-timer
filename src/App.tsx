@@ -1,9 +1,10 @@
 import * as React from 'react';
 import './styles.css';
+import './App.css';
 import { Progress, Button } from 'antd';
 import WorkoutList from './Components/WorkoutList';
 import WorkoutContext, { defaultWorkout } from './Contexts/WorkoutContext';
-import { shortHighBeep } from './utils';
+import { shortHighBeep, longHighBeep } from './utils';
 
 type AppProps = {};
 
@@ -17,6 +18,7 @@ export type Workout = {
 type AppState = {
   timerStarted: number;
   timerRunning: boolean;
+  timerPaused: boolean;
   timerDuration: number;
   timeRemaining: number;
   timeRemainingExact: number;
@@ -28,6 +30,7 @@ class App extends React.Component<AppProps, AppState> {
   state: AppState = {
     timerStarted: Date.now(),
     timerRunning: false,
+    timerPaused: false,
     timerDuration: 30,
     timeRemaining: 30,
     timeRemainingExact: 30,
@@ -65,12 +68,28 @@ class App extends React.Component<AppProps, AppState> {
 
   startTimer = () => {
     if (this.state.workouts && this.state.workouts.length > 0) {
-      this.setState((oldState) => {
-        return {
-          timerRunning: true,
-          timerStarted: Date.now()
-        };
-      }, this.updateTimer);
+      if (this.state.timerPaused) {
+        this.setState(
+          {
+            timerPaused: false,
+            timerRunning: true,
+            // TODO: make resistant to change in workout during pause
+            timerStarted:
+              Date.now() -
+              (this.state.workouts[this.state.currentWorkoutIndex].duration -
+                this.state.timeRemainingExact) *
+                1000
+          },
+          this.updateTimer
+        );
+      } else {
+        this.setState((oldState) => {
+          return {
+            timerRunning: true,
+            timerStarted: Date.now()
+          };
+        }, this.updateTimer);
+      }
     }
   };
 
@@ -88,7 +107,9 @@ class App extends React.Component<AppProps, AppState> {
           },
           () => {
             setTimeout(this.updateTimer, 100);
-            shortHighBeep();
+            if (timeRemaining < 5) {
+              shortHighBeep();
+            }
           }
         );
       } else if (timeRemaining <= 0) {
@@ -115,7 +136,10 @@ class App extends React.Component<AppProps, AppState> {
               };
             }
           },
-          () => setTimeout(this.updateTimer, 100)
+          () => {
+            longHighBeep();
+            setTimeout(this.updateTimer, 100);
+          }
         );
       } else {
         this.setState({ timeRemainingExact: timeRemainingExact }, () =>
@@ -131,7 +155,25 @@ class App extends React.Component<AppProps, AppState> {
     });
   };
 
-  resetTimer() {}
+  pauseTimer = () => {
+    this.setState({
+      timerRunning: false,
+      timerPaused: true
+    });
+  };
+
+  resetTimer = () => {
+    this.setState({
+      timerRunning: false,
+      timerStarted: Date.now(),
+      timerDuration:
+        this.state.workouts.length > 0 ? this.state.workouts[0].duration : 0,
+      timeRemaining:
+        this.state.workouts.length > 0 ? this.state.workouts[0].duration : 0,
+      timeRemainingExact:
+        this.state.workouts.length > 0 ? this.state.workouts[0].duration : 0
+    });
+  };
 
   render() {
     const workoutContextValue = {
@@ -151,15 +193,23 @@ class App extends React.Component<AppProps, AppState> {
           />
           <div className="control-box">
             <Button
+              type="primary"
               onClick={
-                this.state.timerRunning ? this.stopTimer : this.startTimer
+                this.state.timerRunning ? this.pauseTimer : this.startTimer
               }
-              className="start-button"
+              className="timer-button start-button"
               disabled={
                 !(this.state.workouts && this.state.workouts.length > 0)
               }
             >
-              {this.state.timerRunning ? 'Stop' : 'Start'}
+              {this.state.timerRunning ? 'Pause' : 'Start'}
+            </Button>
+            <Button
+              type="dashed"
+              onClick={this.resetTimer}
+              className="timer-button reset-button"
+            >
+              Reset
             </Button>
           </div>
           <WorkoutList />
